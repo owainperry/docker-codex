@@ -1,0 +1,21 @@
+IMAGE  := operry/codex
+TAG    := $(or $(GITHUB_RUN_NUMBER),latest)
+GIT_DIR := /Users/operry/git
+CODEX_DIR := /Users/operry/codex
+
+.PHONY: build run clean
+
+build:
+	docker build . -t $(IMAGE):$(TAG)
+
+run:
+	docker machine start 2>/dev/null; \
+	docker container run --rm -it \
+		-v $(CODEX_DIR):/codex \
+		-v $(GIT_DIR):/home/user/git \
+		--workdir /home/user \
+		--user 1000:1000 \
+		$(IMAGE):$(TAG)
+
+clean:
+	docker rmi $(IMAGE):$(TAG)
